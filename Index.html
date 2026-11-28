@@ -4,78 +4,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WAQAS CRICKET SCORE</title>
+<title>Waqas Cricket Score</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#081526;color:white;font-family:Arial,sans-serif}
-header{background:#087b50;padding:24px 16px;text-align:center}
-header h1{margin:0;font-size:25px;letter-spacing:1px}
-header p{margin:8px 0 0;color:#d5ffe9}
-nav{display:flex;background:#10243b;justify-content:space-around;padding:14px 4px;position:sticky;top:0}
-nav button{background:none;border:0;color:white;font-size:14px;font-weight:bold;padding:8px}
-nav button.active{color:#40e69b;border-bottom:2px solid #40e69b}
-.container{padding:16px;max-width:650px;margin:auto}
-.heading{font-size:19px;margin:12px 0}
-.card{background:#142941;border:1px solid #29435d;border-radius:14px;padding:17px;margin:14px 0}
-.tag{color:#42e69c;font-size:12px;font-weight:bold}
-.teams{display:flex;justify-content:space-between;align-items:center;margin:18px 0}
-.team{text-align:center;width:40%}
-.flag{font-size:35px}
-.team h3{font-size:15px;margin:8px 0}
-.score{font-size:20px;font-weight:bold}
-.vs{color:#8da3b8}
-.details{color:#a9bdd0;font-size:13px;line-height:1.7}
-.status{background:#087b50;padding:10px;border-radius:8px;text-align:center;font-size:13px;margin-top:12px}
-.search{width:100%;padding:13px;border-radius:9px;border:1px solid #426079;background:#142941;color:white;font-size:15px}
-footer{text-align:center;color:#8299ae;padding:25px;font-size:12px}
+body{font-family:Arial;background:#eef3f0;margin:0;padding:15px}
+.container{max-width:500px;margin:auto;background:white;padding:20px;border-radius:16px;box-shadow:0 4px 15px #ccc}
+h1{text-align:center;color:#087443}
+input,select,button{width:100%;padding:12px;margin:8px 0;border-radius:8px;box-sizing:border-box;font-size:16px}
+input,select{border:1px solid #ccc}
+button{background:#087443;color:white;border:none;font-weight:bold}
+.score{background:#087443;color:white;padding:20px;text-align:center;border-radius:12px;margin:15px 0}
+.score h2{font-size:38px;margin:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid button{font-size:22px;padding:18px 5px}
+.secondary{background:#333}
 </style>
 </head>
 <body>
-<header>
-<h1>🏏 WAQAS CRICKET SCORE</h1>
-<p>Your Cricket World • All Matches</p>
-</header>
-<nav>
-<button class="active" onclick="show('live',this)">LIVE</button>
-<button onclick="show('upcoming',this)">UPCOMING</button>
-<button onclick="show('results',this)">RESULTS</button>
-</nav>
 <div class="container">
-<input class="search" id="search" placeholder="Search team or match..." oninput="render()">
-<h2 class="heading" id="heading">Live Matches</h2>
-<div id="matches"></div>
+<h1>🏏 Waqas Cricket Score</h1>
+
+<div id="setup">
+<h3>Match Setup</h3>
+<input id="team1" placeholder="Team 1 Name">
+<input id="team2" placeholder="Team 2 Name">
+<input id="overs" type="number" value="20" placeholder="Overs">
+
+<h3>Toss</h3>
+<select id="toss">
+<option value="">Select Toss Winner</option>
+</select>
+<select id="decision">
+<option value="bat">Bat First</option>
+<option value="bowl">Bowl First</option>
+</select>
+<button onclick="startMatch()">Start Match</button>
 </div>
-<footer>WAQAS CRICKET SCORE<br>Made with ❤️ for Cricket Fans</footer>
+
+<div id="match" style="display:none">
+<div class="score">
+<div id="batting"></div>
+<h2 id="score">0/0</h2>
+<div id="over">Overs: 0.0</div>
+</div>
+<div class="grid">
+<button onclick="add(0)">0</button>
+<button onclick="add(1)">1</button>
+<button onclick="add(2)">2</button>
+<button onclick="add(3)">3</button>
+<button onclick="add(4)">4</button>
+<button onclick="add(6)">6</button>
+<button onclick="wicket()">Wicket</button>
+<button onclick="extra()">Wide</button>
+<button onclick="undo()" class="secondary">Undo</button>
+</div>
+<button class="secondary" onclick="resetMatch()">Reset Match</button>
+</div>
+</div>
+
 <script>
-let current='live';
-const data=[
-{type:'live',a:'Pakistan',b:'Australia',fa:'🇵🇰',fb:'🇦🇺',sa:'145/4',sb:'Yet to bat',over:'16.2 overs',info:'Pakistan batting',status:'LIVE SCORE • DEMO'},
-{type:'upcoming',a:'India',b:'England',fa:'🇮🇳',fb:'🏴',sa:'Match',sb:'Not Started',over:'Tomorrow • 7:00 PM',info:'T20 International',status:'UPCOMING'},
-{type:'results',a:'South Africa',b:'New Zealand',fa:'🇿🇦',fb:'🇳🇿',sa:'180/6',sb:'165/9',over:'20 overs',info:'South Africa won by 15 runs',status:'MATCH COMPLETED'}
-];
-function render(){
-let q=document.getElementById('search').value.toLowerCase();
-let list=data.filter(m=>m.type===current&&(m.a+m.b).toLowerCase().includes(q));
-document.getElementById('matches').innerHTML=list.length?list.map(m=>`
-<div class="card">
-<div class="tag">${m.status}</div>
-<div class="teams">
-<div class="team"><div class="flag">${m.fa}</div><h3>${m.a}</h3><div class="score">${m.sa}</div></div>
-<div class="vs">VS</div>
-<div class="team"><div class="flag">${m.fb}</div><h3>${m.b}</h3><div class="score">${m.sb}</div></div>
-</div>
-<div class="details">${m.over}<br>${m.info}</div>
-${m.type==='live'?'<div class="status">● LIVE MATCH (DEMO DATA)</div>':''}
-</div>`).join(''):'<div class="card">No matches found.</div>';
+let runs=0,wickets=0,balls=0,history=[];
+let teamA="",teamB="",battingTeam="";
+let maxOvers=20;
+
+function startMatch(){
+teamA=document.getElementById("team1").value.trim();
+teamB=document.getElementById("team2").value.trim();
+maxOvers=parseInt(document.getElementById("overs").value)||20;
+let toss=document.getElementById("toss").value;
+let decision=document.getElementById("decision").value;
+
+if(!teamA||!teamB){alert("Enter both team names");return}
+if(!toss){alert("Select toss winner");return}
+
+battingTeam=(decision==="bat")?toss:(toss===teamA?teamB:teamA);
+document.getElementById("setup").style.display="none";
+document.getElementById("match").style.display="block";
+document.getElementById("batting").innerText=battingTeam+" batting";
+update();
 }
-function show(type,btn){
-current=type;
-document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-document.getElementById('heading').innerText=type==='live'?'Live Matches':type==='upcoming'?'Upcoming Matches':'Match Results';
-render();
+
+function save(){
+history.push({runs,wickets,balls});
 }
-render();
+
+function add(n){
+if(balls>=maxOvers*6||wickets>=10)return;
+save();runs+=n;balls++;update();
+}
+
+function wicket(){
+if(balls>=maxOvers*6||wickets>=10)return;
+save();wickets++;balls++;update();
+}
+
+function extra(){
+if(balls>=maxOvers*6)return;
+save();runs++;update();
+}
+
+function undo(){
+if(history.length===0)return;
+let s=history.pop();
+runs=s.runs;wickets=s.wickets;balls=s.balls;
+update();
+}
+
+function update(){
+document.getElementById("score").innerText=runs+"/"+wickets;
+document.getElementById("over").innerText="Overs: "+Math.floor(balls/6)+"."+(balls%6);
+if(balls>=maxOvers*6||wickets>=10){
+document.getElementById("over").innerText+=" - Innings Finished";
+}
+}
+
+function resetMatch(){
+if(confirm("Reset match?")){
+runs=0;wickets=0;balls=0;history=[];
+update();
+}
+}
 </script>
 </body>
 </html>
